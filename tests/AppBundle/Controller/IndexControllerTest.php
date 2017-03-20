@@ -1,15 +1,12 @@
 <?php
-
 namespace Tests\AppBundle\Controller;
-
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * TODO:デフォルトのサンプルなので、消すなりしてください。
- * Class DefaultControllerTest
+ * Class IndexControllerTest
  * @package Tests\AppBundle\Controller
  */
-class DefaultControllerTest extends WebTestCase
+class IndexControllerTest extends WebTestCase
 {
     public function testIndex()
     {

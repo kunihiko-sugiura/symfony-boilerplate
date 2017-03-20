@@ -2,11 +2,13 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
+    - { resource: "@MyUtilBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+# 主に使う言語を指定
 parameters:
-    locale: en
+    locale: jp
 
 framework:
     #esi:             ~
@@ -57,9 +59,62 @@ doctrine:
         #path:     "%database_path%"
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
-        naming_strategy: doctrine.orm.naming_strategy.underscore
-        auto_mapping: true
+        default_entity_manager: default
+#        naming_strategy: doctrine.orm.naming_strategy.underscore
+#        auto_mapping: true
+        # Following Settings is for StofDoctrineExtensionsBundle
+        entity_managers:
+            default:
+                mappings:
+                    #---------------------------------
+                    # 自分のBundleも設定し無いとDoctrinが認識してくれませんよ
+                    AppBundle:
+                        type: annotation
+                        dir: '%kernel.root_dir%/../src/AppBundle/Entity'
+                        is_bundle: false
+                        prefix: AppBundle\Entity
+                    #---------------------------------
+                    gedmo_translatable:
+                        type: annotation
+                        prefix: Gedmo\Translatable\Entity
+                        dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Translatable/Entity"
+                        alias: GedmoTranslatable # (optional) it will default to the name set for the mapping
+                        is_bundle: false
+                    gedmo_translator:
+                        type: annotation
+                        prefix: Gedmo\Translator\Entity
+                        dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Translator/Entity"
+                        alias: GedmoTranslator # (optional) it will default to the name set for the mapping
+                        is_bundle: false
+                    gedmo_loggable:
+                        type: annotation
+                        prefix: Gedmo\Loggable\Entity
+                        dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Entity"
+                        alias: GedmoLoggable # (optional) it will default to the name set for the mappingmapping
+                        is_bundle: false
+                    gedmo_tree:
+                        type: annotation
+                        prefix: Gedmo\Tree\Entity
+                        dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Tree/Entity"
+                        alias: GedmoTree # (optional) it will default to the name set for the mapping
+                        is_bundle: false
+                # ORMでsoft delete使いたければこの設定必要だよ
+                filters:
+                    softdeleteable:
+                        class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
+                        enabled: true
+# http://atlantic18.github.io/DoctrineExtensions/
+stof_doctrine_extensions:
+    default_locale: jp
+    orm:
+        default:
+            tree: true
+            #作成日(CreatedAt)や更新日(UpdatedAt)を自動で挿入・変更してくれる
+            timestampable: true # not needed: listeners are not enabled by default
+            #$em->remove()したときに、削除日(deletedAt)に日付を入れることでソフトデリートしてくれる
+            softdeleteable: true
 
+# Doctrine Migrations Configuration
 doctrine_migrations:
     dir_name: "%kernel.root_dir%/DoctrineMigrations"
     namespace: Application\Migrations

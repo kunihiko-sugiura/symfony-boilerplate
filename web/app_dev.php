@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * 開発用アプリケーション
+ * ローカルIPからのアクセスは開発環境でのみ許容する
+ */
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Debug\Debug;
 
@@ -8,6 +11,7 @@ use Symfony\Component\Debug\Debug;
 // for more information
 //umask(0000);
 
+// ** 以下のコードによりローカルIPからのアクセスは開発環境でのみ許容する
 // This check prevents access to debug front controllers that are deployed by accident to production servers.
 // Feel free to remove this, extend it, or make something more sophisticated.
 if (isset($_SERVER['HTTP_CLIENT_IP'])
@@ -22,9 +26,9 @@ if (isset($_SERVER['HTTP_CLIENT_IP'])
 $loader = require __DIR__.'/../app/autoload.php';
 Debug::enable();
 
-$kernel = new AppKernel('dev', true);
+$kernel = new AppKernel('dev', true);       // カーネルの実体化
 $kernel->loadClassCache();
-$request = Request::createFromGlobals();
-$response = $kernel->handle($request);
-$response->send();
-$kernel->terminate($request, $response);
+$request = Request::createFromGlobals();    // Requestの準備
+$response = $kernel->handle($request);      // リクエストを処理して結果を受け取る
+$response->send();                          // レスポンスをクライアントへ送信
+$kernel->terminate($request, $response);    // 終了

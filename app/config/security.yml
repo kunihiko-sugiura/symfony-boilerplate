@@ -1,24 +1,86 @@
 # To get started with security, check out the documentation:
 # http://symfony.com/doc/current/security.html
+
+# 参照URL
+# セキュリティ http://docs.symfony.gr.jp/symfony2/book/security.html
+# データベースからセキュリティユーザをロードする方法(エンティティプロバイダ) 　http://docs.symfony.gr.jp/symfony2/cookbook/security/entity_provider.html
+# SecurityBundle 設定 (“security”)  http://docs.symfony.gr.jp/symfony2/reference/configuration/security.html
+
 security:
-
     # http://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
+    # ユーザー情報設定、どっからユーザ情報を引っ張るかって話
     providers:
-        in_memory:
-            memory: ~
-
+# 複数指定可能
+#        chain_provider:
+#            chain:
+#                providers: [in_memory, user_db]
+#                providers: [user_db]
+#        in_memory:
+#            memory:
+#                users:
+#                    ryan:
+##                        password: ryanpass
+#                        password: $2y$12$aZkU7U5KUeSskevOYla5XOBKQHWFCtmT8AmloSgeEuAPVQQgo9Dci
+#                        roles: 'ROLE_USER'
+#                    admin:
+##                        password: kitten
+#                        password: $2y$12$7kDnU1s9Fke82BQXhhtJ3ejWbi17xkZiPSJkWMJPMsgxApmFOgl1K
+#                        roles: 'ROLE_ADMIN'
+        database_users:
+            entity: { class: AppBundle\Entity\User, property: email }
+    # 認証設定
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
         dev:
+            # これはデバッグモードのプロファイラ用
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-
-        main:
+#        main:
+#            anonymous: ~
+#            # form_login: ~
+#            # http://symfony.com/doc/current/cookbook/security/form_login_setup.html
+#            http_basic: ~
+        secured_area:
+            pattern:    ^/
+            # anonymous認証はサイトにアクセスしてきたユーザーをログインなしで匿名ユーザーとして扱う方法
             anonymous: ~
-            # activate different ways to authenticate
-
-            # http_basic: ~
-            # http://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
-
-            # form_login: ~
-            # http://symfony.com/doc/current/cookbook/security/form_login_setup.html
+#            http_basic: ~
+            form_login:
+                csrf_token_generator: security.csrf.token_manager
+                login_path:  security_login
+                check_path:  security_login
+            logout:
+                path: security_logout
+                target: /
+    # アクセス制御
+    access_control:
+        - { path: ^/admin/users, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+# IP, host指定も可能
+#        - { path: ^/admin, roles: ROLE_USER_IP, ip: 127.0.0.1 }
+#        - { path: ^/admin, roles: ROLE_USER_HOST, host: symfony\.com$ }
+    # パスワード暗号化の為の設定、複数指定可能
+    encoders:
+#        Symfony\Component\Security\Core\User\User:
+        AppBundle\Entity\User:
+            # TODO:暗号化するとなぜかうまくいかない
+            algorithm: plaintext
+#            algorithm: bcrypt
+#            cost: 12
+#        main1:
+#            class: Symfony\Component\Security\Core\User\User
+##            algorithm: plaintext
+#            # 暗号化するときは以下を指定すれば良い:他の暗号化方式も検討しても良い。以下で暗号化可能
+#            # php bin/console security:encode-password
+#            algorithm: bcrypt
+#            cost: 12
+#        main2:
+#            class: Acme\SecutityBundle\Entity\User
+#            algorithm: sha1
+#            iterations: 1
+#            encode_as_base64: false
+    # 権限の階層を定義:どの権限にどの権限が含まれるかを定義することにより権限の階層を表している
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
+        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]

@@ -1,3 +1,10 @@
+my_util:
+    resource: "@MyUtilBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+# 以下のappってのはsrc/AppBundleを表す
+# AppBundleのControllerはannotationによるルーティングをするということ
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation

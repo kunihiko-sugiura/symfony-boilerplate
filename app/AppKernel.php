@@ -3,8 +3,14 @@
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
+/**
+ * Class AppKernel
+ */
 class AppKernel extends Kernel
 {
+    /**
+     * @return array
+     */
     public function registerBundles()
     {
         $bundles = [
@@ -15,8 +21,10 @@ class AppKernel extends Kernel
             new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+            new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new AppBundle\AppBundle(),
+            new My\UtilBundle\MyUtilBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
