@@ -66,9 +66,7 @@ class AddUserCommand extends ContainerAwareCommand
         $user->setNameEn($name_en);
         $user->setNameJp($name_jp);
         $user->setEmail($email);
-        // TODO:暗号化するとなぜかうまくいかない
-//        $user->setPassword($encodedPassword);
-        $user->setPassword($plainPassword);
+        $user->setPassword($encodedPassword);
         $user->addRole($role);
         $user->setTel($tel);
 

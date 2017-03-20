@@ -64,10 +64,9 @@ security:
     encoders:
 #        Symfony\Component\Security\Core\User\User:
         AppBundle\Entity\User:
-            # TODO:暗号化するとなぜかうまくいかない
-            algorithm: plaintext
-#            algorithm: bcrypt
-#            cost: 12
+#            algorithm: plaintext
+            algorithm: bcrypt
+            cost: 12
 #        main1:
 #            class: Symfony\Component\Security\Core\User\User
 ##            algorithm: plaintext
